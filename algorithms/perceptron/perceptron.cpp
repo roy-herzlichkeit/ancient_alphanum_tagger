@@ -38,7 +38,8 @@ void perceptron_update(const vector<int>& X, vector<vector<double>>& W, const ve
             W[i][j] += learning_rate * (T[j] - activated[j]) * X[i];
 }
 
-void perceptron_train(vector<vector<double>>& W, const string& filename) {
+void perceptron_train(vector<vector<double>>& W, const string& filename, double user_threshold, double user_learning_rate) {
+    threshold = user_threshold, learning_rate = user_learning_rate;
     struct Sample { vector<int> X; vector<int> T; };
     vector<Sample> samples;
 

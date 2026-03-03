@@ -13,10 +13,13 @@ static vector<int> gridToInput(const Grid& grid) {
 
 int main() {
     cout << "=== Perceptron Character Recognition ===\n";
-    cout << "TODO: Implement perceptron algorithm\n";
     vector<vector<double>> W(PERCEPTRON_INPUT_SIZE, vector<double>(PERCEPTRON_NUM_CLASSES, 0.0));
-    
-    perceptron_train(W, "data/training.txt");
+    double threshold, learning_rate;
+    cout << "Enter the Threshold for activation: ";
+    cin >> threshold;
+    cout << "Enter the learning_rate of the perceptron\n(Recommended to keep it between 0 and 1): ";
+    cin >> learning_rate;
+    perceptron_train(W, "data/training.txt", threshold, learning_rate);
     
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE),

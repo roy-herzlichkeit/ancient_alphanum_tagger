@@ -9,7 +9,7 @@ const int MLP_ROWS = 7;
 const int MLP_COLS = 7;
 const int MLP_PIXELS = MLP_ROWS * MLP_COLS;
 const int MLP_INPUT_SIZE = MLP_PIXELS + 1;
-const int MLP_HIDDEN_SIZE = 20;
+const int MLP_HIDDEN_SIZE = 67;
 const int MLP_OUTPUT_SIZE = 36;
 
 struct MLP {

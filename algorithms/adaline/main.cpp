@@ -13,7 +13,6 @@ static vector<int> gridToInput(const Grid& grid) {
 
 int main() {
     cout << "=== ADALINE Character Recognition ===\n";
-    cout << "TODO: Implement ADALINE algorithm\n";
     
     vector<vector<double>> W(ADALINE_INPUT_SIZE, vector<double>(ADALINE_NUM_CLASSES, 0.0));
     adaline_train(W, "data/training.txt");
