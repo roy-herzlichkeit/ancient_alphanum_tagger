@@ -15,11 +15,18 @@ int main() {
     cout << "=== ADALINE Character Recognition ===\n";
     
     vector<vector<double>> W(ADALINE_INPUT_SIZE, vector<double>(ADALINE_NUM_CLASSES, 0.0));
-    adaline_train(W, "data/training.txt");
+    double threshold, learning_rate, tolerance;
+    cout << "Enter threshold: ";
+    cin >> threshold;
+    cout << "Enter learning rate (0-1): ";
+    cin >> learning_rate;
+    cout << "Enter tolerance: ";
+    cin >> tolerance;
+    adaline_train(W, "data/training.txt", threshold, learning_rate, tolerance);
     
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE),
-        "ADALINE Draw Pad - TO BE IMPLEMENTED",
+        "ADALINE Draw Pad  |  LMB: draw  |  Enter: classify  |  C: clear",
         sf::Style::Titlebar | sf::Style::Close
     );
     window.setFramerateLimit(60);

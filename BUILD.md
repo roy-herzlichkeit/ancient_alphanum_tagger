@@ -8,14 +8,32 @@
 
 ## Build Steps
 
-### 1. Create the build directory
+### Quick Build (Recommended)
+
+Use the provided build script that handles temp directory setup automatically:
+
+```bash
+./build.sh
+```
+
+### Manual Build
+
+If you need to build manually, first source the setup script to configure environment variables:
+
+```bash
+source setup.sh
+```
+
+Then follow these steps:
+
+#### 1. Create the build directory
 
 ```bash
 mkdir build
 cd build
 ```
 
-### 2. Configure with CMake
+#### 2. Configure with CMake
 
 ```bash
 cmake -G "MinGW Makefiles" -DSFML_DIR="C:/SFML-2.5.1/lib/cmake/SFML" ..
@@ -23,7 +41,7 @@ cmake -G "MinGW Makefiles" -DSFML_DIR="C:/SFML-2.5.1/lib/cmake/SFML" ..
 
 > If SFML is installed elsewhere, replace the path with your actual SFML CMake config directory.
 
-### 3. Build
+#### 3. Build
 
 ```bash
 cmake --build .
@@ -61,15 +79,4 @@ Training data (`data/training.txt`) and SFML DLLs (on Windows) are automatically
 ## Troubleshooting
 
 - **SFML not found**: Pass `-DSFML_DIR=<path>` pointing to the directory containing `SFMLConfig.cmake`.
-- **Temp directory permission errors**: Set `TEMP` and `TMP` environment variables to a writable directory before running CMake:
-  ```bash
-  export TEMP="$HOME/AppData/Local/Temp"
-  export TMP="$TEMP"
-  ```
-### Extra notes:
-
-    I'm using:
-    ```bash
-    cd "E:/Projects/_PSC_files_/ALPHANUM_DETECTOR" && rm -rf build && mkdir build && cd build && export TEMP="$HOME/AppData/Local/Temp" && export TMP="$TEMP"
-    ```
-    to set the temp of this folder as my original one doesn't permit to do anything and i mistakenly deleted some of my sys paths which I still can't fix
+- **Temp directory permission errors**: The `build.sh` script automatically handles this. If building manually, use `source setup.sh` first to configure temp directories.
