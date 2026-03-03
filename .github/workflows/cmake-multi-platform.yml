@@ -45,9 +45,12 @@ jobs:
 
     - name: Install SFML (Windows)
       if: runner.os == 'Windows'
+      shell: powershell
       run: |
-        choco install sfml --yes
-        echo "SFML_DIR=C:/Program Files/SFML/lib/cmake/SFML" >> $env:GITHUB_ENV
+        Invoke-WebRequest -Uri "https://www.sfml-dev.org/files/SFML-2.5.1-windows-vc15-64-bit.zip" -OutFile sfml.zip
+        Expand-Archive sfml.zip -DestinationPath C:\
+        Rename-Item "C:\SFML-2.5.1" "C:\SFML"
+        echo "SFML_DIR=C:/SFML/lib/cmake/SFML" >> $env:GITHUB_ENV
 
     - name: Set reusable strings
       id: strings
