@@ -1,20 +1,13 @@
 #include "hebb.h"
   
-// Y = X * W
+// Y = X * W  
 vector<int> multiply(const vector<int>& X, const vector<vector<int>>& W) {
-    int n = (int)X.size();  
-    int m = (int)W[0].size();  
+    int m = (int)W.size();
+    int n = (int)X.size();
     vector<int> Y(m, 0);
-
-    for (int i = 0; i < n; i++) {
-        if (X[i] == 1) {  
-            for (int j = 0; j < m; j++)
-                Y[j] += W[i][j];  
-        } else { 
-            for (int j = 0; j < m; j++)
-                Y[j] -= W[i][j];   
-        }
-    }
+    for (int j = 0; j < m; j++)
+        for (int i = 0; i < n; i++)
+            Y[j] += X[i] * W[j][i];
     return Y;
 }
  
@@ -26,20 +19,13 @@ vector<int> activate(const vector<int>& net) {
     return Y;
 }
 
-// Wi(new) = Wi(old) + XiY
+// Wi(new) = Wi(old) + XiY  
 void update(const vector<int>& X, vector<vector<int>>& W, const vector<int>& Y) {
-    int n = (int)X.size();  
-    int m = (int)Y.size(); 
-
-    for (int i = 0; i < n; i++) {
-        if (X[i] == 1) {
-            for (int j = 0; j < m; j++)
-                W[i][j] += Y[j];
-        } else {  
-            for (int j = 0; j < m; j++)
-                W[i][j] -= Y[j];      
-        }
-    }
+    int n = (int)X.size();
+    int m = (int)Y.size();
+    for (int j = 0; j < m; j++)
+        for (int i = 0; i < n; i++)
+            W[j][i] += X[i] * Y[j];
 }
  
 void train(vector<vector<int>>& W, const string& filename) {

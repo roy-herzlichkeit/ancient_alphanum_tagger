@@ -1,6 +1,5 @@
 #include "mlp.h" 
 #include "../../common/draw.h"
-#include <iostream>
 
 static vector<int> gridToInput(const Grid& grid) {
     vector<int> input(MLP_INPUT_SIZE);
@@ -12,15 +11,20 @@ static vector<int> gridToInput(const Grid& grid) {
 }
 
 int main() {
+    double learning_rate;
+    int max_epochs;
     cout << "=== MLP Character Recognition ===\n";
-    cout << "TODO: Implement MLP with backpropagation\n";
+    cout << "Enter the Learning rate (0 - 1): ";
+    cin >> learning_rate;
+    cout << "Enter total Epochs to be performed (1 - 2000): ";
+    cin >> max_epochs;
     
     MLP network;
-    mlp_train(network, "data/training.txt");
+    mlp_train(network, "data/training.txt", learning_rate, max_epochs);
     
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE),
-        "MLP Draw Pad - TO BE IMPLEMENTED",
+        "MLP Draw Pad  |  LMB: draw  |  Enter: classify  |  C: clear",
         sf::Style::Titlebar | sf::Style::Close
     );
     window.setFramerateLimit(60);

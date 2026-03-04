@@ -1,21 +1,20 @@
 #include "perceptron.h"
 #include <iostream>
 #include <fstream>
-
-double threshold = 0.0;
-double learning_rate = 0.3;
-int max_epochs = 3301;
+#include <algorithm>
+#include <random>
+#include <ctime>
 
 vector<double> perceptron_forward(const vector<int>& X, const vector<vector<double>>& W) {
-    int n = (int)X.size(), m = (int)W[0].size();
+    int m = (int)W.size(), n = (int)W[0].size();
     vector<double> Y(m, 0.0);
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < m; j++)
-            Y[j] += X[i] * W[i][j];
+    for (int j = 0; j < m; j++)
+        for (int i = 0; i < n; i++)
+            Y[j] += X[i] * W[j][i];
     return Y;
 }
 
-vector<int> perceptron_activate(const vector<double>& net) {
+vector<int> perceptron_activate(const vector<double>& net, double threshold) {
     int n = net.size();
     vector<int> Y(n, 0);
     for (int i = 0; i < n; i++)
@@ -30,16 +29,18 @@ bool perceptron_comparison(const vector<int>& Y, const vector<int>& T) {
     return true;
 }
 
-void perceptron_update(const vector<int>& X, vector<vector<double>>& W, const vector<int>& activated, const vector<int>& T) {
-    int n = (int)X.size();
-    int m = (int)T.size();
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < m; j++)
-            W[i][j] += learning_rate * (T[j] - activated[j]) * X[i];
+void perceptron_update(const vector<int>& X, vector<vector<double>>& W, const vector<int>& activated, const vector<int>& T, double lr) {
+    int m = (int)T.size(), n = (int)X.size();
+    for (int j = 0; j < m; j++) {
+        double d = lr * (T[j] - activated[j]);
+        for (int i = 0; i < n; i++)
+            W[j][i] += d * X[i];
+    }
 }
 
-void perceptron_train(vector<vector<double>>& W, const string& filename, double user_threshold, double user_learning_rate) {
-    threshold = user_threshold, learning_rate = user_learning_rate;
+void perceptron_train(vector<vector<double>>& W, const string& filename, double user_threshold, double user_learning_rate, int max_epochs) {
+    const double threshold    = user_threshold;
+    const double learning_rate = user_learning_rate;
     struct Sample { vector<int> X; vector<int> T; };
     vector<Sample> samples;
 
@@ -86,14 +87,16 @@ void perceptron_train(vector<vector<double>>& W, const string& filename, double 
     }
     fin.close();
 
+    mt19937 rng((unsigned)time(nullptr));
     for (int epoch = 0; epoch < max_epochs; epoch++) {
         bool converged = true;
+        shuffle(samples.begin(), samples.end(), rng);
         for (auto& s : samples) {
             vector<double> net = perceptron_forward(s.X, W);
-            vector<int> Y = perceptron_activate(net);
+            vector<int> Y = perceptron_activate(net, threshold);
             if (!perceptron_comparison(Y, s.T)) {
                 converged = false;
-                perceptron_update(s.X, W, Y, s.T);
+                perceptron_update(s.X, W, Y, s.T, learning_rate);
             }
         }
         if (converged) {

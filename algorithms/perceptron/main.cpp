@@ -13,7 +13,7 @@ static vector<int> gridToInput(const Grid& grid) {
 
 int main() {
     cout << "=== Perceptron Character Recognition ===\n";
-    vector<vector<double>> W(PERCEPTRON_INPUT_SIZE, vector<double>(PERCEPTRON_NUM_CLASSES, 0.0));
+    vector<vector<double>> W(PERCEPTRON_NUM_CLASSES, vector<double>(PERCEPTRON_INPUT_SIZE, 0.0));
     double threshold, learning_rate;
     cout << "Enter the Threshold for activation: ";
     cin >> threshold;

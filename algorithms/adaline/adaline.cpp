@@ -2,32 +2,28 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-
-double threshold, learning_rate, tolerance;
-int n = ADALINE_INPUT_SIZE, m = ADALINE_NUM_CLASSES;
+#include <ctime>
+#include <algorithm>
+#include <random>
 
 vector<double> adaline_forward(const vector<int>& X, const vector<vector<double>>& W) {
-    vector<double> Y(m, 0.0);
-    for (int i = 0; i < n; i++) 
-        for (int j = 0; j < m; j++)
-            Y[j] += X[i] * W[i][j];
+    vector<double> Y(ADALINE_NUM_CLASSES, 0.0);
+    for (int j = 0; j < ADALINE_NUM_CLASSES; j++)
+        for (int i = 0; i < ADALINE_INPUT_SIZE; i++)
+            Y[j] += X[i] * W[j][i];
     return Y;
 }
 
-pair<bool, double> adaline_update(const vector<int>& X, vector<vector<double>>& W, const vector<double>& Y, const vector<int>& T) {
+pair<bool, double> adaline_update(const vector<int>& X, vector<vector<double>>& W, const vector<double>& Y, const vector<int>& T, double lr, double tolerance) {
     bool flag = true;
     double error = 0.0;
-    
-    for (int j = 0; j < m; j++) {
+    for (int j = 0; j < ADALINE_NUM_CLASSES; j++) {
         double err = T[j] - Y[j];
         error += err * err;
-    }
-    
-    double lr = learning_rate / n;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            double del = lr * (T[j] - Y[j]) * X[i];
-            W[i][j] += del;
+        double lre = lr * err;
+        for (int i = 0; i < ADALINE_INPUT_SIZE; i++) {
+            double del = lre * X[i];
+            W[j][i] += del;
             flag &= (fabs(del) < tolerance);
         }
     }
@@ -35,7 +31,8 @@ pair<bool, double> adaline_update(const vector<int>& X, vector<vector<double>>& 
 }
 
 void adaline_train(vector<vector<double>>& W, const string& filename, double user_threshold, double user_learning_rate, double user_tolerance) {
-    threshold = user_threshold, learning_rate = user_learning_rate, tolerance = user_tolerance;
+    const double lr        = user_learning_rate / ADALINE_INPUT_SIZE;
+    const double tolerance = user_tolerance;
     struct Sample { vector<int> X; vector<int> T; };
     vector<Sample> samples;
 
@@ -49,10 +46,10 @@ void adaline_train(vector<vector<double>>& W, const string& filename, double use
     while (getline(fin, line)) {
         if (line.empty())
             continue;
-        vector<int> X(n);
+        vector<int> X(ADALINE_INPUT_SIZE);
         {
             size_t pos = 0;
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < ADALINE_INPUT_SIZE; i++) {
                 while (pos < line.size() && line[pos] == ' ')
                     pos++;
                 int sign = 1;
@@ -65,10 +62,10 @@ void adaline_train(vector<vector<double>>& W, const string& filename, double use
         }
         if (!getline(fin, line))
             break;
-        vector<int> T(m);
+        vector<int> T(ADALINE_NUM_CLASSES);
         {
             size_t pos = 0;
-            for (int i = 0; i < m; i++) {
+            for (int i = 0; i < ADALINE_NUM_CLASSES; i++) {
                 while (pos < line.size() && line[pos] == ' ') ++pos;
                 int sign = 1;
                 if (pos < line.size() && line[pos] == '-') { sign = -1; ++pos; }
@@ -87,20 +84,21 @@ void adaline_train(vector<vector<double>>& W, const string& filename, double use
         return;
     }
 
-    int epoch = 0, max_epochs = 10007
-    , sn = samples.size();
+    int epoch = 0, max_epochs = 10007;
     double prev_E = 1e30, E = 0.0;
+    mt19937 rng((unsigned)time(nullptr));
 
     while (epoch < max_epochs) {
         E = 0.0;
+        shuffle(samples.begin(), samples.end(), rng);
         for (auto& s : samples) {
             vector<double> Y = adaline_forward(s.X, W);
-            pair<bool, double> tmp = adaline_update(s.X, W, Y, s.T);
+            pair<bool, double> tmp = adaline_update(s.X, W, Y, s.T, lr, tolerance);
             E += tmp.second;
         }
-        E /= double(sn);
-        cout << "Epoch " << epoch + 1 << " / " << max_epochs << "  RMSE: " << sqrt(E) << endl;
-                if (fabs(prev_E - E) < tolerance) {
+        E /= double(samples.size());
+        cout << "Epoch " << epoch + 1 << " / " << max_epochs << "  RMSE: " << sqrt(E) << "\n";
+        if (fabs(prev_E - E) < tolerance) {
             epoch++;
             break;
         }
@@ -123,6 +121,6 @@ int adaline_classify(const vector<int>& X, const vector<vector<double>>& W) {
 
 char adaline_classLabel(int idx) {
     if (idx < 26) return 'A' + idx;
-    if (idx < 37) return '0' + (idx - 26);
+    if (idx < 36) return '0' + (idx - 26);
     return '?';
 }

@@ -2,4 +2,5 @@
 *.py
 *.sh
 /CMakeFiles
-/.vscode
+.vscode/
+.venv/

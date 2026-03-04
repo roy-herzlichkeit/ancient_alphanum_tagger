@@ -1,4 +1,3 @@
-// main.cpp — MADALINE main program (stub)
 #include "madaline.h"
 #include "../../common/draw.h"
 #include <iostream>

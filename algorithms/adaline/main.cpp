@@ -14,7 +14,7 @@ static vector<int> gridToInput(const Grid& grid) {
 int main() {
     cout << "=== ADALINE Character Recognition ===\n";
     
-    vector<vector<double>> W(ADALINE_INPUT_SIZE, vector<double>(ADALINE_NUM_CLASSES, 0.0));
+    vector<vector<double>> W(ADALINE_NUM_CLASSES, vector<double>(ADALINE_INPUT_SIZE, 0.0));
     double threshold, learning_rate, tolerance;
     cout << "Enter threshold: ";
     cin >> threshold;

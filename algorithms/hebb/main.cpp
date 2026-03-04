@@ -12,7 +12,7 @@ static vector<int> gridToInput(const Grid& grid) {
 }
 
 int main() {
-    vector<vector<int>> W(INPUT_SIZE, vector<int>(NUM_CLASSES, 0));
+    vector<vector<int>> W(NUM_CLASSES, vector<int>(INPUT_SIZE, 0));
     train(W, "data/training.txt");
 
     sf::RenderWindow window(
