@@ -4,19 +4,36 @@
 using namespace std;
 
 #ifdef _WIN32
-#include <windows.h>
-    static string exeDir() {
-        char buf[MAX_PATH];
-        GetModuleFileNameA(NULL, buf, MAX_PATH);
-        string path(buf);
-        size_t pos = path.find_last_of("\\/");
-        return (pos != string::npos) ? path.substr(0, pos + 1) : ".\\";
-    }
-
-    static int launch(const string& dir, const char* name) {
-        string cmd = "\"" + dir + name + ".exe\"";
-        return system(cmd.c_str());
-    }
+#  include <windows.h>
+static string exeDir() {
+    char buf[MAX_PATH];
+    GetModuleFileNameA(NULL, buf, MAX_PATH);
+    string path(buf);
+    size_t pos = path.find_last_of("\\/");
+    return (pos != string::npos) ? path.substr(0, pos + 1) : ".\\";
+}
+static void cdExeDir(const string& dir) { SetCurrentDirectoryA(dir.c_str()); }
+static int launch(const string& dir, const char* name) {
+    string cmd = "\"" + dir + name + ".exe\"";
+    return system(cmd.c_str());
+}
+#else
+#  include <unistd.h>
+#  include <limits.h>
+static string exeDir() {
+    char buf[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (len == -1) return "./";
+    buf[len] = '\0';
+    string path(buf);
+    size_t pos = path.find_last_of('/');
+    return (pos != string::npos) ? path.substr(0, pos + 1) : "./";
+}
+static void cdExeDir(const string& dir) { chdir(dir.c_str()); }
+static int launch(const string& dir, const char* name) {
+    string cmd = "\"" + dir + name + "\"";
+    return system(cmd.c_str());
+}
 #endif
 
 void showMenu() {
@@ -35,7 +52,7 @@ int main() {
     // Change working directory to the folder containing neural_selector.exe
     // so that all sub-executables find data/training.txt correctly.
     string dir = exeDir();
-    SetCurrentDirectoryA(dir.c_str());
+    cdExeDir(dir);
 
     int choice;
     while (true) {
