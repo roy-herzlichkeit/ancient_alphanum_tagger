@@ -1,6 +1,22 @@
 #include <iostream>
 #include <cstdlib>
+#include <string>
+#include <windows.h>
 using namespace std;
+
+// Returns the directory containing this executable (with trailing backslash).
+static string exeDir() {
+    char buf[MAX_PATH];
+    GetModuleFileNameA(NULL, buf, MAX_PATH);
+    string path(buf);
+    size_t pos = path.find_last_of("\\/");
+    return (pos != string::npos) ? path.substr(0, pos + 1) : ".\\";
+}
+
+static int launch(const string& dir, const char* name) {
+    string cmd = "\"" + dir + name + ".exe\"";
+    return system(cmd.c_str());
+}
 
 void showMenu() {
     cout << "\n=== Neural Networks Character Recognition ===\n";
@@ -15,46 +31,48 @@ void showMenu() {
 }
 
 int main() {
+    // Change working directory to the folder containing neural_selector.exe
+    // so that all sub-executables find data/training.txt correctly.
+    string dir = exeDir();
+    SetCurrentDirectoryA(dir.c_str());
+
     int choice;
-    
     while (true) {
         showMenu();
-        cin >> choice;
-        
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(1024, '\n');
+            continue;
+        }
+
         switch (choice) {
             case 1:
                 cout << "\nStarting Hebb Learning...\n";
-                system("hebb_main");
+                launch(dir, "hebb_main");
                 break;
-                
             case 2:
                 cout << "\nStarting Perceptron...\n";
-                system("perceptron_main");
+                launch(dir, "perceptron_main");
                 break;
-                
             case 3:
                 cout << "\nStarting Adaline...\n";
-                system("adaline_main");
+                launch(dir, "adaline_main");
                 break;
-                
             case 4:
                 cout << "\nStarting Madaline...\n";
-                system("madaline_main");
+                launch(dir, "madaline_main");
                 break;
-                
             case 5:
                 cout << "\nStarting MLP...\n";
-                system("mlp_main");
+                launch(dir, "mlp_main");
                 break;
-                
             case 0:
                 cout << "Goodbye!\n";
                 return 0;
-                
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
-        
+
         cout << "\nPress Enter to continue...";
         cin.ignore();
         cin.get();
