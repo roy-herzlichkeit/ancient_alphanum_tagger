@@ -13,15 +13,21 @@ static vector<int> gridToInput(const Grid& grid) {
 }
 
 int main() {
+    double learning_rate, max_epochs;
     cout << "=== MADALINE Character Recognition ===\n";
-    cout << "TODO: Implement MADALINE algorithm\n";
-    
+    cout << "Enter learning rate (0-1): ";
+    cin >> learning_rate;
+    cout << "Enter the max number of epoch you'd allow (enter 0 for default): ";
+    cin >> max_epochs;
     Madaline network;
-    madaline_train(network, "data/training.txt");
+    if (max_epochs)
+        madaline_train(network, "data/training.txt", learning_rate, max_epochs);
+    else
+        madaline_train(network, "data/training.txt", learning_rate);
     
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE),
-        "MADALINE Draw Pad - TO BE IMPLEMENTED", 
+        "MADALINE Draw Pad  |  LMB: draw  |  Enter: classify  |  C: clear",
         sf::Style::Titlebar | sf::Style::Close
     );
     window.setFramerateLimit(60);
