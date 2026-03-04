@@ -1,22 +1,23 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
-#include <windows.h>
 using namespace std;
 
-// Returns the directory containing this executable (with trailing backslash).
-static string exeDir() {
-    char buf[MAX_PATH];
-    GetModuleFileNameA(NULL, buf, MAX_PATH);
-    string path(buf);
-    size_t pos = path.find_last_of("\\/");
-    return (pos != string::npos) ? path.substr(0, pos + 1) : ".\\";
-}
+#ifdef _WIN32
+#include <windows.h>
+    static string exeDir() {
+        char buf[MAX_PATH];
+        GetModuleFileNameA(NULL, buf, MAX_PATH);
+        string path(buf);
+        size_t pos = path.find_last_of("\\/");
+        return (pos != string::npos) ? path.substr(0, pos + 1) : ".\\";
+    }
 
-static int launch(const string& dir, const char* name) {
-    string cmd = "\"" + dir + name + ".exe\"";
-    return system(cmd.c_str());
-}
+    static int launch(const string& dir, const char* name) {
+        string cmd = "\"" + dir + name + ".exe\"";
+        return system(cmd.c_str());
+    }
+#endif
 
 void showMenu() {
     cout << "\n=== Neural Networks Character Recognition ===\n";
